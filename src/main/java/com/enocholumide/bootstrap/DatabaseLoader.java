@@ -2,6 +2,7 @@ package com.enocholumide.bootstrap;
 
 import com.enocholumide.domain.news.Comment;
 import com.enocholumide.domain.news.News;
+import com.enocholumide.domain.school.course.Assignment;
 import com.enocholumide.repositories.*;
 import com.enocholumide.domain.school.Department;
 import com.enocholumide.domain.school.Program;
@@ -117,10 +118,17 @@ public class DatabaseLoader implements CommandLineRunner {
 
         // CREATE SCHEDULES
 
-        // Schedules
         Schedule landSchedule = new Schedule(java.sql.Date.valueOf(LocalDate.now().minusDays(10)), java.sql.Date.valueOf(LocalDate.now().plusMonths(6)), Period.WEEKLY );
         Schedule javaSchedule = new Schedule(java.sql.Date.valueOf(LocalDate.now().minusDays(1)), java.sql.Date.valueOf(LocalDate.now().plusMonths(6)), Period.WEEKLY );
         Schedule geoFencingSchedule = new Schedule(java.sql.Date.valueOf(LocalDate.now().plusDays(2)), java.sql.Date.valueOf(LocalDate.now().plusMonths(6)), Period.WEEKLY );
+
+
+        // CREATE ASSIGNMENTS
+        Assignment assignment = new Assignment();
+        assignment.setDeadline(java.sql.Date.valueOf(LocalDate.now().plusMonths(2)));
+        assignment.setTitle("Machine Learning for Production");
+        assignment.setType("Paper");
+
 
         // CREATE COURSE
 
@@ -129,17 +137,25 @@ public class DatabaseLoader implements CommandLineRunner {
         Course geoFencing = new Course("Basics of geoFencing", "GEOF 101", 1, Levels.MASTER, Session.SUMMER);
 
         landSurveying201.getLecturers().add(edwards);
+        landSurveying201.addSchedule(landSchedule);
+        landSurveying201.addAssignment(assignment);
         landSurveying201.getPrograms().add(surveyingBachelor);
         landSurveying201.getPrograms().add(geoInformaticsBachelor);
+        landSurveying201.getStudents().add(olumide);
+        landSurveying201.getStudents().add(sandra);
         this.coursesRepository.save(landSurveying201);
 
         java101.getLecturers().add(edwards);
-        geoFencing.getPrograms().add(surveyingMaster);
+        java101.addSchedule(javaSchedule);
+        java101.getPrograms().add(surveyingMaster);
+        java101.getStudents().add(olumide);
         this.coursesRepository.save(java101);
 
         geoFencing.getLecturers().add(edwards);
-        java101.getPrograms().add(geoInformaticsBachelor);
-        java101.getPrograms().add(surveyingBachelor);
+        geoFencing.addSchedule(geoFencingSchedule);
+        geoFencing.getPrograms().add(geoInformaticsBachelor);
+        geoFencing.getPrograms().add(surveyingBachelor);
+        geoFencing      .getStudents().add(sandra);
         this.coursesRepository.save(geoFencing);
 
         // GRADES

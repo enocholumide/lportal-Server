@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -22,7 +23,7 @@ public class CourseNews extends AbstractTimestampEntity {
     @Enumerated(EnumType.STRING)
     private CourseNewsType type;
 
-    @Lob
+    @Type(type = "text")
     private String link;
 
     private String text;

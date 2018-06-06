@@ -2,6 +2,7 @@ package com.enocholumide.domain.users;
 
 import com.enocholumide.domain.school.Department;
 import com.enocholumide.domain.shared.enumerated.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,5 +36,10 @@ public class Staff extends ApplicationUser {
         super.setRole(Role.STAFF);
         this.staffID = staffID;
         this.department = department;
+    }
+
+    @JsonIgnore
+    public String getStaffID() {
+        return staffID;
     }
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -20,36 +21,32 @@ import java.util.Set;
 @Entity
 public class Assignment extends AbstractTimestampEntity {
 
-    @NotNull
     @ManyToOne
+    @JsonIgnore
     private Course course;
 
-    @NotNull
     @Column(nullable = false)
     private String type;
 
-    @NotNull
     @Column(nullable = false)
     private Date deadline;
 
-    @Lob
-    @NotNull
+    @Type(type = "text")
     @Length(min = 6)
     @Column(nullable = false)
     private String title;
 
-    @Lob
+    @Type(type = "text")
     private String description;
 
-    @Lob
+    @Type(type = "text")
     private String notes;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assignment")
-    private Set<CourseUploads> courseUploads = new HashSet<>();
+    private Set<CourseUploads> uploads = new HashSet<>();
 
-    public Assignment(Course course, String type, Date deadline, String title, String description, String notes) {
-        this.course = course;
+    public Assignment(String type, Date deadline, String title, String description, String notes) {
         this.type = type;
         this.deadline = deadline;
         this.title = title;

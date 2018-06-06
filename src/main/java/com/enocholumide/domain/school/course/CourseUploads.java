@@ -7,6 +7,7 @@ import com.enocholumide.domain.users.ApplicationUser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -27,7 +28,8 @@ public class CourseUploads extends AbstractTimestampEntity {
     private String name;
     private String type;
     private String size;
-    @Lob
+
+    @Type(type = "text")
     private String url;
 
     @Enumerated(EnumType.STRING)

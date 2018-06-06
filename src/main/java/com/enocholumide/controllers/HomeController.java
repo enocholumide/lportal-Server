@@ -21,19 +21,6 @@ public class HomeController {
 
     @Autowired
     private RequestMappingHandlerMapping handlerMapping;
-    /**
-
-    @GetMapping(value = "/", name = "Show APIS")
-    private ResponseEntity<List<RequestMappingInfo>> showApis() {
-
-        Map<RequestMappingInfo, HandlerMethod> routes = handlerMapping.getHandlerMethods();
-        List<RequestMappingInfo> apis = new ArrayList<>();
-
-        routes.forEach((mappingInfo, handlerMethod) -> apis.add(mappingInfo));
-
-        return ResponseEntity.ok().body(apis);
-    }
-    */
 
     @RequestMapping(value = "/", name = "Show APIS", method = RequestMethod.GET)
     private String showApis(Model model) {

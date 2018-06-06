@@ -32,7 +32,6 @@ public class Program extends AbstractTimestampEntity {
     @NotNull
     private int semesters = 1;
 
-
     public Program(Department department, String name, Levels level, int semesters) {
         this.department = department;
         this.name = name;
