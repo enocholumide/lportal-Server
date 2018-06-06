@@ -183,7 +183,7 @@ public class DatabaseLoader implements CommandLineRunner {
 
         this.newsRepository.save(libraryChat);
         this.newsRepository.save(drawingSets);
-        
+
     }
 
 }

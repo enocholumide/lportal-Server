@@ -15,7 +15,7 @@ public class NewsController {
     @Autowired
     private NewsRepository newsRepository;
 
-    @GetMapping(value = "/api/news")
+    @GetMapping(value = "/api/news", name = "Get all news")
     private ResponseEntity<List<News>> getAllNews(){
         return ResponseEntity.ok().body(this.newsRepository.findAll());
     }
