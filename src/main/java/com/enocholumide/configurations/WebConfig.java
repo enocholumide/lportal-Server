@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer  {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**").allowedOrigins("http://localhost:3000", "http://localhost:5000").allowedMethods("PUT", "POST", "GET", "DELETE");
+        registry.addMapping("/api/**").allowedOrigins("http://localhost:3000", "http://localhost:5000", "https://lportalclient.herokuapp.com").allowedMethods("PUT", "POST", "GET", "DELETE");
     }
 }
 
