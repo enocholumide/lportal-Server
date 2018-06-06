@@ -20,7 +20,7 @@ public class School {
 
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "school")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "school")
     private Set<Department> departments = new HashSet<>();
 
     public School(String name) {

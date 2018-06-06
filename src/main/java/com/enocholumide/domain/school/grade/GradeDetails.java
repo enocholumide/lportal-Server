@@ -13,7 +13,7 @@ public class GradeDetails {
     private int enrolled;
     private HashMap<String, Integer> details = new HashMap<String, Integer>();
     private int maximumCount;
-    private GradeLevel averageGrade;
+    private GradeLevel averageGrade = GradeLevel.A;
 
 
     public GradeDetails(List<Grade> grades) {
@@ -30,20 +30,24 @@ public class GradeDetails {
 
         int sum = 0;
 
-        for(Grade grade : grades){
+        if(grades.size() > 0) {
 
-            if(details.containsKey(String.valueOf(grade.getGradeLevel()))) {
+            for (Grade grade : grades) {
 
-                details.put(String.valueOf(grade.getGradeLevel()), details.get(String.valueOf(grade.getGradeLevel())) + 1);
+                if (details.containsKey(String.valueOf(grade.getGradeLevel()))) {
 
-                if(this.maximumCount < details.get(String.valueOf(grade.getGradeLevel()))){
-                    this.setMaximumCount(details.get(String.valueOf(grade.getGradeLevel())));
+                    details.put(String.valueOf(grade.getGradeLevel()), details.get(String.valueOf(grade.getGradeLevel())) + 1);
+
+                    if (this.maximumCount < details.get(String.valueOf(grade.getGradeLevel()))) {
+                        this.setMaximumCount(details.get(String.valueOf(grade.getGradeLevel())));
+                    }
+                    sum += grade.getScore();
                 }
-                sum += grade.getScore();
             }
-        }
 
-        this.setAverageGrade(getGradeFromScore(sum/grades.size()));
+            this.setAverageGrade(getGradeFromScore(sum / grades.size()));
+
+        }
 
     }
 

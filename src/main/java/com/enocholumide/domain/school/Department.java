@@ -1,6 +1,7 @@
 package com.enocholumide.domain.school;
 
 import com.enocholumide.domain.news.News;
+import com.enocholumide.domain.users.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.enocholumide.domain.users.Staff;
 import com.enocholumide.domain.users.Student;
@@ -17,7 +18,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@JsonIgnoreProperties({"programs", "students", "staffs", "news"})
+@JsonIgnoreProperties({"programs", "news", "staffs", "students"})
 public class Department {
 
     @Id
@@ -36,13 +37,16 @@ public class Department {
     private Set<Program> programs = new HashSet<>();
 
     @OneToMany( mappedBy = "department", cascade = CascadeType.ALL)
-    private Set<Student> students = new HashSet<>();
+    private Set<News> news = new HashSet<>();
 
     @OneToMany( mappedBy = "department", cascade = CascadeType.ALL)
     private Set<Staff> staffs = new HashSet<>();
 
     @OneToMany( mappedBy = "department", cascade = CascadeType.ALL)
-    private Set<News> news = new HashSet<>();
+    private Set<Student> students = new HashSet<>();
+
+    @Transient
+    private Set<String> programsOffered = new HashSet<>(); // need to find a better way to do this
 
     public Department(String name, School school) {
         this.name = name;

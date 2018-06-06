@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.enocholumide.domain.school.Department;
 import com.enocholumide.domain.shared.AbstractTimestampEntity;
 import com.enocholumide.domain.users.ApplicationUser;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -21,6 +23,7 @@ import java.util.Set;
 public class News extends AbstractTimestampEntity {
 
     @ManyToOne
+    @JsonIgnoreProperties({"programsOffered"})
     private Department department;
 
     @ManyToOne
@@ -28,10 +31,10 @@ public class News extends AbstractTimestampEntity {
 
     private String title;
 
-    @Lob
+    @Type(type = "text")
     private String body;
 
-    @Lob
+    @Type(type = "text")
     private String photoUrl;
 
     @OneToMany( mappedBy = "news", cascade = CascadeType.ALL)

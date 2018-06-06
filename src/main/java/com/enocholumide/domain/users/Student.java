@@ -16,14 +16,15 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@JsonIgnoreProperties({"department", "grades", "matricNo", "created", "updated"})
+@JsonIgnoreProperties({"grades", "matricNo", "created", "updated"})
 public class Student extends ApplicationUser {
+
+    @ManyToOne
+    @JsonIgnoreProperties({"programsOffered", "school"})
+    private Department department;
 
     @Column(unique = true)
     private String matricNo;
-
-    @ManyToOne
-    private Department department;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "student")
     private Set<Grade> grades = new HashSet<>();

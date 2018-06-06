@@ -29,6 +29,9 @@ public class Comment extends AbstractTimestampEntity {
     @Type(type = "text")
     private String text;
 
+    @Type(type = "text")
+    private String extraImages = ""; // Separated with '&'
+
     @OneToMany
     private Set<ApplicationUser> likes = new HashSet<>();
 
