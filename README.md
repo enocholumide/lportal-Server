@@ -1,3 +1,7 @@
-# Spring Boot Postgress Example
+# lportal-server (Spring)
 
-You can learn more about my courses [here](http://courses.springframework.guru/courses/) on my site.
+Work in progress
+
+https://lportal.herokuapp.com/
+
+This serves as the restful api for the main client https://github.com/enocholumide/lportal-client
