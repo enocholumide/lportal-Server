@@ -22,5 +22,6 @@ public interface CourseService {
     ResponseEntity getContents(long courseID);
     ResponseEntity deleteContent(long courseID, long contentID);
     ResponseEntity getActivities(long courseID);
+    ResponseEntity getTeacherCourses(long teacherID);
 
 }

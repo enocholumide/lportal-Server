@@ -63,10 +63,6 @@ public class Course extends AbstractTimestampEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
     @JsonIgnore
-    private Set<Grade> grades = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
-    @JsonIgnore
     private Set<Assignment> assignments = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
@@ -88,12 +84,13 @@ public class Course extends AbstractTimestampEntity {
     @PrePersist
     protected void onCreate() {
         super.onCreate();
-        this.validate();
+        //this.validate();
+
     }
     @PreUpdate
     protected void onUpdate() {
         super.onUpdate();
-        this.validate();
+        //this.validate();
     }
 
     public void validate(){
@@ -112,6 +109,17 @@ public class Course extends AbstractTimestampEntity {
         assignments.add(assignment);
     }
 
+    public void addGrade(Grade grade){
+        if(students.contains(grade.getStudent()))
+            grade.getStudent().getGrades().put(this, grade);
+    }
+
+    public void addStudent(Student student) {
+
+        students.add(student);
+        student.getGrades().put(this, new Grade(this, student, this.session, 0));
+
+    }
 
     public void makeActivity(String title, CourseNewsType courseNewsType) {
 

@@ -33,6 +33,7 @@ public class GradesServiceImpl implements GradesService {
     @Override
     public ResponseEntity findByStudent(long studentId) {
 
+
         Optional<ApplicationUser> userOptional = userRepository.findById(studentId);
 
         if(!userOptional.isPresent())
@@ -43,9 +44,12 @@ public class GradesServiceImpl implements GradesService {
 
         Student student = (Student) userOptional.get();
 
-        List<Grade> studentGrades = this.gradeRepository.findByStudent(student);
+        //List<Grade> studentGrades = this.gradeRepository.findByStudent(student);
+        //System.out.println("SANDA" + student.getGrades());
 
-        return ResponseEntity.ok().body(studentGrades);
+        return ResponseEntity.ok().body(this.gradeRepository.findByStudent(student));
+
+
 
     }
 
@@ -62,4 +66,17 @@ public class GradesServiceImpl implements GradesService {
         List<Grade> statsGrade = this.gradeRepository.getGradeStats(course);
         return ResponseEntity.ok().body(new GradeDetails(statsGrade));
     }
+
+    @Override
+    public ResponseEntity getCourseGrades(long courseID) {
+        Optional<Course> courseOptional = this.courseRepository.findById(courseID);
+
+        if(!courseOptional.isPresent())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This course does not exist");
+
+        Course course = courseOptional.get();
+
+        return ResponseEntity.ok().body(this.gradeRepository.getCourseGrades(course));
+    }
+
 }

@@ -58,6 +58,11 @@ public class CourseController {
         return ResponseEntity.ok().body(courseService.getStudents(id));
     }
 
+    @GetMapping(value = "/api/teachers/{id}/courses", name = "Get course containing a staff")
+    private ResponseEntity getTeacherCourses(@PathVariable long id) {
+        return courseService.getTeacherCourses(id);
+    }
+
     /**
      * ASSIGNMENTS
      */

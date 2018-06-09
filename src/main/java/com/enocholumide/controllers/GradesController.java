@@ -21,4 +21,10 @@ public class GradesController {
     private ResponseEntity getCourseStatistics(@PathVariable long course_id){
         return gradesService.getCourseStatistics(course_id);
     }
+
+    @GetMapping(value = "/api/students/regid/{course_id}", name = "Get all student matric no for a course")
+    private ResponseEntity getCourseGrades(@PathVariable long course_id){
+        return gradesService.getCourseGrades(course_id);
+    }
+
 }

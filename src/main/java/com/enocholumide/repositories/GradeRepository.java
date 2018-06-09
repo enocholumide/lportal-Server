@@ -11,10 +11,15 @@ import java.util.List;
 
 public interface GradeRepository extends JpaRepository<Grade, Long> {
 
-    @Query("SELECT g FROM Grade g WHERE g.student = :student order by g.id, g.course.session, g.startDate asc ")
+    @Query("SELECT g FROM Grade g WHERE g.student = :student order by g.id, g.session desc ")
     List<Grade> findByStudent(@Param("student") Student student);
 
     @Query("SELECT g FROM Grade g WHERE g.course = :course order by g.id, g.gradeLevel desc ")
     List<Grade> getGradeStats(@Param("course") Course course);
 
+    @Query("SELECT g FROM Grade g WHERE g.course = :course order by g.id, g.student.lastName desc ")
+    List<Grade> getCourseGrades(@Param("course") Course course);
+
+    @Query("SELECT g.student.registrationID FROM Grade g WHERE g.course = :course")
+    List<Grade> getCourseStudentMatricNo(@Param("course") Course course);
 }

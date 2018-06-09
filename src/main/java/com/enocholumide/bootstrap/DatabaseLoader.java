@@ -20,7 +20,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Component
 public class DatabaseLoader implements CommandLineRunner {
@@ -42,6 +41,9 @@ public class DatabaseLoader implements CommandLineRunner {
 
     @Autowired
     private NewsRepository newsRepository;
+
+    @Autowired
+    private GradeRepository gradeRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -136,48 +138,44 @@ public class DatabaseLoader implements CommandLineRunner {
         Course java101 = new Course("Introduction to Java", "ITJA 101", 1, Levels.BACHELOR, Session.SUMMER);
         Course geoFencing = new Course("Basics of geoFencing", "GEOF 101", 1, Levels.MASTER, Session.SUMMER);
 
+        this.coursesRepository.save(landSurveying201);
+        this.coursesRepository.save(java101);
+        this.coursesRepository.save(geoFencing);
+
         landSurveying201.getLecturers().add(edwards);
         landSurveying201.addSchedule(landSchedule);
         landSurveying201.addAssignment(assignment);
         landSurveying201.getPrograms().add(surveyingBachelor);
         landSurveying201.getPrograms().add(geoInformaticsBachelor);
-        landSurveying201.getStudents().add(olumide);
-        landSurveying201.getStudents().add(sandra);
+        landSurveying201.addStudent(olumide);
+        landSurveying201.addStudent(sandra);
         this.coursesRepository.save(landSurveying201);
 
         java101.getLecturers().add(edwards);
         java101.addSchedule(javaSchedule);
         java101.getPrograms().add(surveyingMaster);
-        java101.getStudents().add(olumide);
+        java101.addStudent(olumide);
         this.coursesRepository.save(java101);
+
 
         geoFencing.getLecturers().add(edwards);
         geoFencing.addSchedule(geoFencingSchedule);
         geoFencing.getPrograms().add(geoInformaticsBachelor);
         geoFencing.getPrograms().add(surveyingBachelor);
-        geoFencing      .getStudents().add(sandra);
+        geoFencing.addStudent(sandra);
+        geoFencing.addStudent(olumide);
         this.coursesRepository.save(geoFencing);
 
+        //this.usersRepository.save(olumide);
+
         // GRADES
+        Grade olumideGrade = new Grade(landSurveying201, olumide, landSurveying201.getSession(), 75); //Course course, Student student, Session session, double score
 
-        Grade olumideGeofencing = new Grade(geoFencing, olumide, java.sql.Date.valueOf(LocalDate.of(2017, 01, 01)), java.sql.Date.valueOf(LocalDate.of(2017, 06, 01)),  65);
-        Grade olumideJavaGrade = new Grade(java101, olumide, java.sql.Date.valueOf(LocalDate.of(2017, 06, 01)), java.sql.Date.valueOf(LocalDate.of(2017, 12, 01)),  90);
-        Grade olumideSurveyGrade = new Grade(landSurveying201, olumide, new Date(), new Date(),  65);
+        Grade olumideJava= new Grade(java101, olumide, java101.getSession()     , 95);
 
-        olumide.getGrades().add(olumideGeofencing);
-        olumide.getGrades().add(olumideJavaGrade);
-        olumide.getGrades().add(olumideSurveyGrade);
-        this.usersRepository.save(olumide);
+        this.gradeRepository.save(olumideGrade);
+        this.gradeRepository.save(olumideJava);
 
-        Grade sandraGeofencing = new Grade(geoFencing, sandra, java.sql.Date.valueOf(LocalDate.of(2017, 01, 01)), java.sql.Date.valueOf(LocalDate.of(2017, 06, 01)),  50);
-        Grade sandraJavaGrade = new Grade(java101, sandra, java.sql.Date.valueOf(LocalDate.of(2017, 06, 01)), java.sql.Date.valueOf(LocalDate.of(2017, 12, 01)),  80);
-        Grade sandraSurveyGrade = new Grade(landSurveying201, sandra, new Date(), new Date(), 95);
-
-        sandra.getGrades().add(sandraGeofencing);
-        sandra.getGrades().add(sandraJavaGrade);
-        sandra.getGrades().add(sandraSurveyGrade);
-
-        this.usersRepository.save(sandra);
 
         // NEWS
 

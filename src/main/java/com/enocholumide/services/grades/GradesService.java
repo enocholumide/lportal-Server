@@ -6,4 +6,5 @@ public interface GradesService {
 
     ResponseEntity findByStudent(long studentId);
     ResponseEntity getCourseStatistics(long courseID);
+    ResponseEntity getCourseGrades(long courseID);
 }
