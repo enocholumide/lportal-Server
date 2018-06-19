@@ -37,10 +37,10 @@ public class GradesServiceImpl implements GradesService {
         Optional<ApplicationUser> userOptional = userRepository.findById(studentId);
 
         if(!userOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ApplicationUser not found");
 
         if(!userOptional.get().getRole().equals(Role.STUDENT))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not a student");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ApplicationUser is not a student");
 
         Student student = (Student) userOptional.get();
 

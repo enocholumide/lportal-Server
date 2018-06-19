@@ -1,8 +1,7 @@
 package com.enocholumide.domain.school.course;
 
-import com.enocholumide.domain.shared.AbstractTimestampEntity;
+import com.enocholumide.domain.shared.DateAudit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +9,6 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +17,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Assignment extends AbstractTimestampEntity {
+public class Assignment extends DateAudit {
 
     @ManyToOne
     @JsonIgnore

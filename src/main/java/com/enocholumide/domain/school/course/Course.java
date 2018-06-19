@@ -1,6 +1,6 @@
 package com.enocholumide.domain.school.course;
 
-import com.enocholumide.domain.shared.AbstractTimestampEntity;
+import com.enocholumide.domain.shared.DateAudit;
 import com.enocholumide.domain.shared.enumerated.CourseNewsType;
 import com.enocholumide.domain.shared.enumerated.Levels;
 import com.enocholumide.domain.shared.enumerated.Session;
@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Course extends AbstractTimestampEntity {
+public class Course extends DateAudit {
 
     @NotNull
     private String name;
@@ -79,18 +79,6 @@ public class Course extends AbstractTimestampEntity {
         this.semester = semester;
         this.level = level;
         this.session = session;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        super.onCreate();
-        //this.validate();
-
-    }
-    @PreUpdate
-    protected void onUpdate() {
-        super.onUpdate();
-        //this.validate();
     }
 
     public void validate(){

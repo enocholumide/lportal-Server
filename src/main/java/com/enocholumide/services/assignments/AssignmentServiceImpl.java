@@ -44,14 +44,14 @@ public class AssignmentServiceImpl implements AssignmentService {
         Optional<ApplicationUser> userOptional = this.usersRepository.findById(teacherID);
 
         if(!courseOptional.isPresent() || !userOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or user");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or applicationUser");
 
         if(!userOptional.get().getRole().equals(Role.STAFF))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only a teacher can create an assignment");
 
         boolean notAllowed = true;
-        for(ApplicationUser user : courseOptional.get().getLecturers()){
-            if(user.equals(userOptional.get())){
+        for(ApplicationUser applicationUser : courseOptional.get().getLecturers()){
+            if(applicationUser.equals(userOptional.get())){
                 notAllowed = false;
                 break;
             }
@@ -106,7 +106,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         Optional<Assignment> assignmentOptional = assignmentsRepository.findById(assignmentID);
 
         if(!courseOptional.isPresent() || !applicationUser.isPresent() || !assignmentOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or user or assignment");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or applicationUser or assignment");
 
         Course course = courseOptional.get();
         Assignment assignment = assignmentOptional.get();
@@ -163,10 +163,10 @@ public class AssignmentServiceImpl implements AssignmentService {
         Optional<Assignment> assignmentOptional = assignmentsRepository.findById(assignmentID);
 
         if(!courseOptional.isPresent() || !applicationUser.isPresent() || !assignmentOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or user or assignment");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or applicationUser or assignment");
 
         if(!applicationUser.get().getRole().equals(Role.STUDENT))
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This user is not a student");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This applicationUser is not a student");
 
         if(!courseOptional.get().getStudents().contains(applicationUser.get()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This student is not enrolled in this course");
@@ -192,11 +192,11 @@ public class AssignmentServiceImpl implements AssignmentService {
         CourseUploads courseUpload = courseUploadsOptional.get();
 
         Course course = courseUpload.getCourse();
-        ApplicationUser user = courseUpload.getApplicationUser();
+        ApplicationUser applicationUser = courseUpload.getApplicationUser();
 
         this.courseUplaodsRepository.delete(courseUploadsOptional.get());
 
-        List<CourseUploads> courseUploads = this.coursesRepository.findUserUploads(course, user, courseUpload.getAssignment(), UploadType.HANDIN);
+        List<CourseUploads> courseUploads = this.coursesRepository.findUserUploads(course, applicationUser, courseUpload.getAssignment(), UploadType.HANDIN);
 
         return ResponseEntity.ok().body(courseUploads);
     }
@@ -215,7 +215,7 @@ public class AssignmentServiceImpl implements AssignmentService {
                 messages.add("This course doesn't exist or have been deleted");
 
             if(!userOptional.isPresent())
-                messages.add("This user doesn't exist or have been deleted");
+                messages.add("This applicationUser doesn't exist or have been deleted");
 
             if(!assignmentOptional.isPresent())
                 messages.add("This assignment doesn't exist or have been deleted");
@@ -224,7 +224,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         if(!userOptional.get().getRole().equals(Role.STAFF))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This user is not a staff");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This applicationUser is not a staff");
 
 
         if(!courseOptional.get().getLecturers().contains(userOptional.get()))

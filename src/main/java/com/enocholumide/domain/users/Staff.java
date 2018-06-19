@@ -1,6 +1,8 @@
 package com.enocholumide.domain.users;
 
+import com.enocholumide.domain.organisation.UserOrganisations;
 import com.enocholumide.domain.school.Department;
+import com.enocholumide.domain.shared.Roles;
 import com.enocholumide.domain.shared.enumerated.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -33,9 +35,11 @@ public class Staff extends ApplicationUser {
         }
     }
 
-    public Staff(String firstName, String lastName, String photoUrl, Department department, String staffID) {
+    public Staff(String firstName, String lastName, String email, String photoUrl, Department department, String staffID) {
         super(firstName, lastName, photoUrl);
-        super.setRole(Role.STAFF);
+        super.setEmail(email);
+        this.setRole(Role.STAFF);
+        this.getRoles().add(Role.STAFF);
         this.staffID = staffID;
         this.department = department;
     }

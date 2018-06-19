@@ -1,25 +1,19 @@
 package com.enocholumide.bootstrap;
 
-import com.enocholumide.domain.news.Comment;
-import com.enocholumide.domain.news.News;
-import com.enocholumide.domain.school.course.Assignment;
+import com.enocholumide.domain.organisation.Organisation;
+import com.enocholumide.domain.organisation.UserOrganisations;
+import com.enocholumide.domain.shared.Roles;
+import com.enocholumide.domain.shared.enumerated.Role;
 import com.enocholumide.repositories.*;
 import com.enocholumide.domain.school.Department;
 import com.enocholumide.domain.school.Program;
 import com.enocholumide.domain.school.School;
-import com.enocholumide.domain.school.course.Course;
-import com.enocholumide.domain.school.course.Schedule;
-import com.enocholumide.domain.school.grade.Grade;
 import com.enocholumide.domain.shared.enumerated.Levels;
-import com.enocholumide.domain.shared.enumerated.Period;
-import com.enocholumide.domain.shared.enumerated.Session;
 import com.enocholumide.domain.users.Staff;
-import com.enocholumide.domain.users.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
 
 @Component
 public class DatabaseLoader implements CommandLineRunner {
@@ -45,16 +39,28 @@ public class DatabaseLoader implements CommandLineRunner {
     @Autowired
     private GradeRepository gradeRepository;
 
+    @Autowired
+    private OrganisationRepository organisationRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Override
     public void run(String... args) throws Exception {
 
+
+        // CREATE ORGANISATION
+        Organisation nwUniversity = new Organisation("North West University");
+        nwUniversity.setLogoUrl("https://i.pinimg.com/originals/3c/fb/8e/3cfb8e78c1403123665b40820dc9179b.jpg");
+        this.organisationRepository.save(nwUniversity);
+
         // CREATE SCHOOLS
 
-        School engineering = (new School("Faculty of Engineering"));
-        School environmental = (new School("Faculty of Environmental Technology"));
-        School arts = (new School("Faculty of Arts"));
-        School sciences = (new School("Faculty of Sciences"));
-        School management = (new School("Faculty of Management"));
+        School engineering = (new School(nwUniversity, "Faculty of Engineering"));
+        School environmental = (new School(nwUniversity, "Faculty of Environmental Technology"));
+        School arts = (new School(nwUniversity, "Faculty of Arts"));
+        School sciences = (new School(nwUniversity, "Faculty of Sciences"));
+        School management = (new School(nwUniversity, "Faculty of Management"));
 
         this.schoolRepository.save(engineering);
         this.schoolRepository.save(environmental);
@@ -90,7 +96,25 @@ public class DatabaseLoader implements CommandLineRunner {
         this.programsRepository.save(surveyingBachelor);
         this.programsRepository.save(geoInformaticsBachelor);
 
+
+
         // CREATE USERS
+
+         Staff olumide = new Staff(
+         "Joseph",
+         "Frank",
+         "admin@lportal.com",
+         "https://www.impulse-info.com/wp-content/uploads/2017/04/John-Doe.jpg",
+         architecture,
+         "5879MC"
+         );
+
+         olumide.getOrganisations().add(new UserOrganisations(architecture.getSchool().getOrganisation(), olumide));
+         olumide.setPassword(passwordEncoder.encode("secret"));
+         olumide.getRoles().add(Role.ADMIN);
+         this.usersRepository.save(olumide);
+
+        /**
 
         Student olumide = new Student (
                 "Olumide",
@@ -106,13 +130,7 @@ public class DatabaseLoader implements CommandLineRunner {
                 architecture,
                 "54124");
 
-        Staff edwards = new Staff(
-                "Edward",
-                "Peters",
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2D1b_5x2bxNV0A03Aw-3C1v0VvDeO9Nv5wIll_Ny8FM2y_d9nPA",
-                architecture,
-                "5879MC"
-        );
+
 
         this.usersRepository.save(olumide);
         this.usersRepository.save(sandra);
@@ -198,6 +216,10 @@ public class DatabaseLoader implements CommandLineRunner {
         this.newsRepository.save(libraryChat);
         this.newsRepository.save(drawingSets);
 
+         */
+
     }
+
+
 
 }

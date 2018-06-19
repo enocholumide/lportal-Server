@@ -1,12 +1,9 @@
 package com.enocholumide.domain.news;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.enocholumide.domain.school.Department;
-import com.enocholumide.domain.shared.AbstractTimestampEntity;
+import com.enocholumide.domain.shared.DateAudit;
 import com.enocholumide.domain.users.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +17,7 @@ import java.util.Set;
 @Setter
 @Entity
 @NoArgsConstructor
-public class News extends AbstractTimestampEntity {
+public class News extends DateAudit {
 
     @ManyToOne
     @JsonIgnoreProperties({"programsOffered"})

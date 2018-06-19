@@ -1,6 +1,6 @@
 package com.enocholumide.domain.school.course;
 
-import com.enocholumide.domain.shared.AbstractTimestampEntity;
+import com.enocholumide.domain.shared.DateAudit;
 import com.enocholumide.domain.shared.enumerated.Period;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.Date;
 @Setter
 @Entity
 @NoArgsConstructor
-public class Schedule extends AbstractTimestampEntity {
+public class Schedule extends DateAudit {
 
     @ManyToOne
     private Course course;

@@ -11,9 +11,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -49,7 +47,7 @@ public class Student extends ApplicationUser {
     }
     public Student(String firstName, String lastName, String photoUrl, Department department, String registrationID) {
         super(firstName, lastName, photoUrl);
-        super.setRole(Role.STUDENT);
+        this.setRole(Role.STUDENT);
         this.registrationID = registrationID;
         this.department = department;
     }

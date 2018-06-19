@@ -1,49 +1,42 @@
 package com.enocholumide.domain.shared;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.*;
 
 @MappedSuperclass
-public abstract class AbstractTimestampEntity {
+@EntityListeners(AuditingEntityListener.class)
+@JsonIgnoreProperties( value = {"createdAt", "updatedAt"}, allowGetters = true )
+public abstract class DateAudit implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView
     private Long id;
 
-    @Column(nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
-    @JsonView
-    private Date created;
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
-    @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
-    @JsonView
-    private Date updated ;
+    @Column(nullable = false)
+    private Instant updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        updated = created = new Date();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updated = new Date();
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AbstractTimestampEntity)) return false;
-        AbstractTimestampEntity that = (AbstractTimestampEntity) o;
+        if (!(o instanceof DateAudit)) return false;
+        DateAudit that = (DateAudit) o;
         return Objects.equals(id, that.id);
     }
 
@@ -51,5 +44,9 @@ public abstract class AbstractTimestampEntity {
     public int hashCode() {
 
         return Objects.hash(id);
+    }
+
+    public Long getId(){
+        return id;
     }
 }

@@ -1,6 +1,6 @@
 package com.enocholumide.domain.school;
 
-import com.enocholumide.domain.shared.AbstractTimestampEntity;
+import com.enocholumide.domain.shared.DateAudit;
 import com.enocholumide.domain.shared.enumerated.Levels;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Program extends AbstractTimestampEntity {
+public class Program extends DateAudit {
 
     @NotNull
     @ManyToOne

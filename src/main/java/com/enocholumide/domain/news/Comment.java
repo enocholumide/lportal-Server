@@ -1,8 +1,7 @@
 package com.enocholumide.domain.news;
 
-import com.enocholumide.domain.shared.AbstractTimestampEntity;
+import com.enocholumide.domain.shared.DateAudit;
 import com.enocholumide.domain.users.ApplicationUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @JsonIgnoreProperties({"news"})
-public class Comment extends AbstractTimestampEntity {
+public class Comment extends DateAudit {
 
     @ManyToOne
     private News news;

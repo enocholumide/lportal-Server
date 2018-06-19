@@ -1,6 +1,6 @@
 package com.enocholumide.domain.school.course;
 
-import com.enocholumide.domain.shared.AbstractTimestampEntity;
+import com.enocholumide.domain.shared.DateAudit;
 import com.enocholumide.domain.shared.enumerated.CourseNewsType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @NoArgsConstructor
-public class CourseNews extends AbstractTimestampEntity {
+public class CourseNews extends DateAudit {
 
     @ManyToOne
     @JsonIgnore

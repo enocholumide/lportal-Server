@@ -40,13 +40,13 @@ public class NewsServiceImpl implements NewsService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("News not found");
 
         if (!userOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ApplicationUser not found");
 
 
         News news = newsOptional.get();
-        ApplicationUser user = userOptional.get();
+        ApplicationUser applicationUser = userOptional.get();
 
-        comment.setApplicationUser(user);
+        comment.setApplicationUser(applicationUser);
         news.getComments().add(comment);
         newsRepository.save(news);
 

@@ -1,9 +1,9 @@
 package com.enocholumide.domain.school.course;
 
-import com.enocholumide.domain.shared.AbstractTimestampEntity;
+import com.enocholumide.domain.shared.DateAudit;
 import com.enocholumide.domain.shared.enumerated.UploadType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.enocholumide.domain.users.ApplicationUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-public class CourseUploads extends AbstractTimestampEntity {
+public class CourseUploads extends DateAudit {
 
     @ManyToOne
     @JsonIgnore

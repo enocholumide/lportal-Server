@@ -1,7 +1,6 @@
 package com.enocholumide.domain.school;
 
 import com.enocholumide.domain.news.News;
-import com.enocholumide.domain.users.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.enocholumide.domain.users.Staff;
 import com.enocholumide.domain.users.Student;

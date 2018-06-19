@@ -1,7 +1,6 @@
 package com.enocholumide.services.courses;
 
 import com.enocholumide.domain.school.course.Course;
-import com.enocholumide.domain.school.course.CourseFilter;
 import com.enocholumide.domain.school.course.CourseNews;
 import com.enocholumide.domain.school.course.CourseUploads;
 import com.enocholumide.domain.shared.enumerated.CourseNewsType;
@@ -14,13 +13,11 @@ import com.enocholumide.repositories.AssignmentsRepository;
 import com.enocholumide.repositories.CourseUplaodsRepository;
 import com.enocholumide.repositories.CoursesRepository;
 import com.enocholumide.repositories.UsersRepository;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
