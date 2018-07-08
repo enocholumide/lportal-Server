@@ -7,4 +7,6 @@ public interface SchoolsService {
     ResponseEntity getSchools();
     ResponseEntity getDepartments();
     ResponseEntity getPrograms();
+
+    ResponseEntity<?> getOrganisationSchools(long orgID);
 }

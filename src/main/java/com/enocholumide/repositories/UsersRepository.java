@@ -1,7 +1,6 @@
 package com.enocholumide.repositories;
 
-import com.enocholumide.domain.organisation.Organisation;
-import com.enocholumide.domain.organisation.UserOrganisations;
+import com.enocholumide.domain.organisation.UserOrganisation;
 import com.enocholumide.domain.shared.enumerated.Role;
 import com.enocholumide.domain.users.ApplicationUser;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +12,8 @@ public interface UsersRepository extends JpaRepository<ApplicationUser, Long> {
 
     Optional<ApplicationUser> findByEmail(String email);
     Boolean existsByEmail(String email);
+    Boolean existsById(long id);
 
-    List<ApplicationUser> findApplicationUsersByOrganisationsContainingAndRolesEquals(UserOrganisations userOrganisation, Role role);
+    List<ApplicationUser> findApplicationUsersByOrganisationsContainingAndRolesEquals(UserOrganisation userOrganisation, Role role);
 
 }

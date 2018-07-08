@@ -9,6 +9,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +22,7 @@ import java.util.Set;
 public class Assignment extends DateAudit {
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     @JsonIgnore
     private Course course;
 
@@ -27,28 +30,39 @@ public class Assignment extends DateAudit {
     private String type;
 
     @Column(nullable = false)
-    private Date deadline;
+    private Instant deadline;
 
     @Type(type = "text")
     @Length(min = 6)
     @Column(nullable = false)
-    private String title;
+    private String title ="";
 
     @Type(type = "text")
-    private String description;
+    private String description ="";
 
     @Type(type = "text")
-    private String notes;
+    private String notes ="";
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assignment")
     private Set<CourseUploads> uploads = new HashSet<>();
 
-    public Assignment(String type, Date deadline, String title, String description, String notes) {
+    public Assignment(String type, Instant deadline, String title, String description, String notes) {
         this.type = type;
         this.deadline = deadline;
         this.title = title;
         this.description = description;
         this.notes = notes;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void validate(){
+
+        Instant deadline = getDeadline().truncatedTo(ChronoUnit.DAYS);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+
+        if(deadline.compareTo(now) < 1 )
+            throw new RuntimeException("Assignment deadline must be in the future");
     }
 }

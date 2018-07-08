@@ -4,6 +4,8 @@ import com.enocholumide.domain.shared.DateAudit;
 import com.enocholumide.domain.shared.enumerated.UploadType;
 import com.enocholumide.domain.users.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,6 +38,7 @@ public class CourseUploads extends DateAudit {
     private UploadType content;
 
     @ManyToOne
-    @JsonIgnore
+    @JsonIgnoreProperties({"roles", "role", "department", "organisations", "studentCourses", "registrationID"})
+    @JsonProperty("user")
     private ApplicationUser applicationUser;
 }

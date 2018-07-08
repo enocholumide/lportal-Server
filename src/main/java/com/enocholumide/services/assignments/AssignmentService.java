@@ -2,13 +2,22 @@ package com.enocholumide.services.assignments;
 
 import com.enocholumide.domain.school.course.Assignment;
 import com.enocholumide.domain.school.course.CourseUploads;
+import com.enocholumide.domain.shared.enumerated.UploadType;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface AssignmentService {
+
+    ResponseEntity<List<Assignment>> getCourseAssignments(long courseID);
+
     ResponseEntity createAssignment(Assignment assignment, long courseID, long teacherID);
-    ResponseEntity updateAssignment(Assignment assignment, long courseID, long teacherID, long assID);
-    ResponseEntity submitAssignment(CourseUploads courseUpload, long courseID, long assignmentID, long studentID);
-    ResponseEntity deleteAssignment(long assID, long courseID, long studentID);
-    ResponseEntity getSubmissions(long courseID, long studentID, long assID);
-    ResponseEntity deleteSubmittedAssignment(long assID);
+    ResponseEntity updateAssignment(Assignment assignment, long assID, long courseID, long teacherID);
+    ResponseEntity deleteAssignment(long assID);
+
+    ResponseEntity submitAnAssignment(CourseUploads courseUpload, long assID, long studentID );
+    ResponseEntity getStudentAssignmentSubmissions(long assID, long studentID);
+    ResponseEntity getSubmissionsForTeachers(long assID, UploadType uploadType);
+
+    ResponseEntity deleteStudentSubmission(long handInID);
 }

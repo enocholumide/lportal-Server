@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
+@RequestMapping("/api/courses")
 public class CourseController {
 
     @Autowired
@@ -32,12 +33,12 @@ public class CourseController {
 
 
 
-    @GetMapping(value = "/api/courses", name = "All Courses")
-    private ResponseEntity getAllCourses(){
-        return ResponseEntity.ok().body(courseService.listAll());
+    @GetMapping(value = "/program/{pID}", name = "All Courses")
+    private ResponseEntity getAllCourses(@PathVariable long pID){
+        return ResponseEntity.ok().body(courseService.listAll(pID));
     }
 
-    @GetMapping(value = "/api/courses/{id}", name = "A Course")
+    @GetMapping(value = "/{id}", name = "A Course")
     private ResponseEntity getCourse(@PathVariable long id){
         Optional<Course> courseOptional = coursesRepository.findById(id);
 
@@ -47,20 +48,16 @@ public class CourseController {
         return ResponseEntity.ok().body(courseService.getCourse(id));
     }
 
-    @GetMapping(value = "/api/courses/{id}/students", name = "Course Students")
+    @GetMapping(value = "/{id}/students", name = "Course Students")
     private ResponseEntity getAllCourseStudents(@PathVariable long id){
-
-        ResponseEntity responseEntity = getCourse(id);
-
-        if(!responseEntity.getStatusCode().equals(HttpStatus.OK))
-            return responseEntity;
 
         return ResponseEntity.ok().body(courseService.getStudents(id));
     }
 
-    @GetMapping(value = "/api/teachers/{id}/courses", name = "Get course containing a staff")
-    private ResponseEntity getTeacherCourses(@PathVariable long id) {
-        return courseService.getTeacherCourses(id);
+    @GetMapping(value = "/org/{orgID}/students/{stud_id}", name = "Student Courses")
+    private ResponseEntity getStudentCourses (@PathVariable long orgID, @PathVariable long stud_id){
+
+        return ResponseEntity.ok().body(courseService.getStudentCourses(orgID, stud_id));
     }
 
     /**
@@ -68,40 +65,7 @@ public class CourseController {
      */
 
 
-    @GetMapping(value = "/api/courses/{id}/assignments", name = "Get Course Assignments")
-    private ResponseEntity getAssignments(@PathVariable long id){
-        return courseService.getAssignments(id);
-    }
 
-    @PutMapping(value = "/api/courses/{c_id}/assignments/create/{u_id}", name = "Create a new assignment")
-    private ResponseEntity<Set<Assignment>> createAssignment( @RequestBody Assignment assignment, @PathVariable long c_id, @PathVariable long u_id ) {
-        return this.assignmentService.createAssignment(assignment, c_id, u_id);
-    }
-
-    @PutMapping(value = "/api/courses/{c_id}/assignments/{a_id}/update/{u_id}", name = "Update an assignment")
-    private ResponseEntity<Set<Assignment>> updateAssignment( @RequestBody Assignment assignment, @PathVariable long c_id, @PathVariable long u_id, @PathVariable long a_id ) {
-        return assignmentService.updateAssignment(assignment, c_id, u_id, a_id);
-    }
-
-    @PutMapping(value = "/api/courses/{id}/assignment/{a_id}/submit/{s_id}", name = "Submit an assignment handIn")
-    private ResponseEntity submitAssignment(@RequestBody CourseUploads courseUpload, @PathVariable long id, @PathVariable long a_id, @PathVariable long s_id){
-        return assignmentService.submitAssignment(courseUpload, id, a_id, s_id);
-    }
-
-    @DeleteMapping(value = "/api/courses/handin/delete/{h_id}", name = "Delete an assignment handIn")
-    private ResponseEntity deleteSubmittedAssignment(@PathVariable long h_id){
-        return assignmentService.deleteSubmittedAssignment(h_id);
-    }
-
-    @GetMapping(value = "/api/courses/{id}/assignment/{a_id}/submissions/{s_id}", name = "Get assignment submission for a student")
-    private ResponseEntity getStudentAssignments(@PathVariable long id, @PathVariable long a_id, @PathVariable long s_id){
-        return assignmentService.getSubmissions(id, s_id, a_id);
-    }
-
-    @DeleteMapping(value = "/api/courses/{c_id}/assignments/{a_id}/delete/{u_id}", name = "Delete an assignment")
-    private ResponseEntity<Set<Assignment>> deleteAssignment( @PathVariable long a_id, @PathVariable long c_id, @PathVariable long u_id ) {
-        return this.assignmentService.deleteAssignment(a_id, c_id, u_id);
-    }
 
 
     /**
@@ -109,33 +73,29 @@ public class CourseController {
      */
 
 
-    @GetMapping(value = "/api/courses/{id}/activities", name = "All Course Activities")
+    @GetMapping(value = "/{id}/activities", name = "All Course Activities")
     private ResponseEntity getActivities(@PathVariable long id){
         return courseService.getActivities(id);
     }
 
-    @GetMapping(value = "/api/courses/{id}/contents", name = "Get course contents/ files ")
-    private ResponseEntity getContents(@PathVariable long id){
-        return courseService.getContents(id);
-    }
-
-
     /**
-     * COURSE CONTENT
+     * COURSE CONTENTS / FILES
      */
 
-
-    @PutMapping(value = "/api/courses/{id}/content/{u_id}/create", name = "Create a course content")
-    private ResponseEntity addContent (@RequestBody CourseUploads courseUpload, @PathVariable long id, @PathVariable long u_id){
-        return courseService.addContent(courseUpload, id, u_id);
-    }
-
-    @DeleteMapping(value = "/api/courses/{id}/content/{co_id}/delete", name = "Delete a course content")
-    private ResponseEntity deleteContent (@PathVariable long id, @PathVariable long co_id){
-        return courseService.deleteContent(id, co_id);
+    @GetMapping(value = "/{courseID}/content/read", name = "Get course contents/ files")
+    private ResponseEntity getContents (@PathVariable long courseID ){
+        return courseService.getContents(courseID);
     }
 
 
+    @PutMapping(value = "/{courseID}/content/create/{userID}", name = "Create a course content")
+    private ResponseEntity addContent (@RequestBody CourseUploads courseUpload, @PathVariable long courseID, @PathVariable long userID){
+        return courseService.addContent(courseUpload, courseID, userID);
+    }
 
+    @DeleteMapping(value = "/{courseID}/content/delete/{contentID}", name = "Delete a course content")
+    private ResponseEntity deleteContent (@PathVariable long courseID, @PathVariable long contentID){
+        return courseService.deleteContent(courseID, contentID);
+    }
 
 }

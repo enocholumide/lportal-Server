@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 
 @RestController
+@RequestMapping("/api/organisations/{orgID}/news")
 public class NewsController {
 
     @Autowired
@@ -22,12 +23,12 @@ public class NewsController {
     @Autowired
     private NewsService newsService;
 
-    @GetMapping(value = "/api/news", name = "Get all news")
+    @GetMapping(value = "", name = "Get all news")
     private ResponseEntity getAllNews(){
         return this.newsService.listAll();
     }
 
-    @PutMapping(value = "/api/news/{news_id}/comments/add/applicationUser/{user_id}", name = "Add comment to a news")
+    @PutMapping(value = "/{news_id}/comments/add/applicationUser/{user_id}", name = "Add comment to a news")
     private ResponseEntity addComment(@NotNull @RequestBody Comment comment, @PathVariable long news_id, @PathVariable long user_id){
         return newsService.addComment(comment, news_id, user_id);
     }

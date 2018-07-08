@@ -25,4 +25,17 @@ public interface CoursesRepository extends JpaRepository<Course, Long> {
 
     List<Course> findCoursesByLecturersContaining(Staff staff);
 
+
+    List<Course> findAllByLecturersContaining(Staff staff);
+
+    /**
+     * Finds course containing a staff and with an organisationi ID
+     * @param staff the staff object
+     * @param orgID the organisationID
+     * @return list of course
+     */
+    List<Course> findAllByLecturersContainingAndProgramDepartmentSchoolOrganisationId(Staff staff, long orgID);
+
+    List<Course> findAllByProgramId(long programID);
+
 }

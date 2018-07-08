@@ -2,9 +2,11 @@ package com.enocholumide.services.schools;
 
 import com.enocholumide.domain.school.Department;
 import com.enocholumide.repositories.DepartmentRepository;
+import com.enocholumide.repositories.OrganisationRepository;
 import com.enocholumide.repositories.ProgramsRepository;
 import com.enocholumide.repositories.SchoolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,9 @@ public class SchoolsServiceImpl implements SchoolsService{
 
     @Autowired
     private SchoolRepository schoolRepository;
+
+    @Autowired
+    private OrganisationRepository organisationRepository;
 
     @Autowired
     private ProgramsRepository programsRepository;
@@ -47,5 +52,14 @@ public class SchoolsServiceImpl implements SchoolsService{
     @Override
     public ResponseEntity getPrograms() {
         return ResponseEntity.ok().body(programsRepository.findAll());
+    }
+
+    @Override
+    public ResponseEntity<?> getOrganisationSchools(long orgID) {
+
+        if(!organisationRepository.existsById(orgID))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Organisation does not exist");
+
+        return ResponseEntity.ok(schoolRepository.findAllByOrganisationId(orgID));
     }
 }

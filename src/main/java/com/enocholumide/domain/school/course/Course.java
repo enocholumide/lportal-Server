@@ -27,19 +27,29 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "courses")
 public class Course extends DateAudit {
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    @JsonIgnore
+    private Program program;
+
     @NotNull
+    @Column(nullable = false)
     private String name;
 
     @NotNull
+    @Column(nullable = false)
     private String code;
 
     private int semester = 1;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Levels level;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Session session;
 
@@ -56,11 +66,6 @@ public class Course extends DateAudit {
     @JsonIgnore
     private Set<Student> students = new HashSet<>();
 
-    @ManyToMany()
-    @JoinColumn(name = "programs")
-    @JsonIgnoreProperties({"course"})
-    private Set<Program> programs = new HashSet<>();
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
     @JsonIgnore
     private Set<Assignment> assignments = new HashSet<>();
@@ -73,11 +78,12 @@ public class Course extends DateAudit {
     @JsonIgnore
     private Set<CourseNews> news = new HashSet<>();
 
-    public Course(@NotNull String name, @NotNull String code, int semester,Levels leveL, Session session) {
+    public Course(Program program, @NotNull String name, @NotNull String code, int semester,Levels leveL, Session session) {
+        this.program = program;
         this.name = name;
         this.code = code;
         this.semester = semester;
-        this.level = level;
+        this.level = program.getLevel();
         this.session = session;
     }
 

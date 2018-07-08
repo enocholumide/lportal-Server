@@ -8,17 +8,14 @@ import com.enocholumide.domain.shared.enumerated.CourseNewsType;
 import com.enocholumide.domain.shared.enumerated.Role;
 import com.enocholumide.domain.shared.enumerated.UploadType;
 import com.enocholumide.domain.users.ApplicationUser;
-import com.enocholumide.repositories.AssignmentsRepository;
-import com.enocholumide.repositories.CourseUplaodsRepository;
-import com.enocholumide.repositories.CoursesRepository;
-import com.enocholumide.repositories.UsersRepository;
+import com.enocholumide.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,30 +32,24 @@ public class AssignmentServiceImpl implements AssignmentService {
     private UsersRepository usersRepository;
 
     @Autowired
-    private CourseUplaodsRepository courseUplaodsRepository;
+    private CourseUplaodsRepository courseUploadsRepository;
+
+    @Autowired
+    private TeachersRepository teachersRepository;
 
     @Override
-    public ResponseEntity createAssignment(com.enocholumide.domain.school.course.Assignment assignment, long courseID, long teacherID) {
+    public ResponseEntity createAssignment(Assignment assignment, long courseID, long teacherID) {
 
         Optional<Course> courseOptional = this.coursesRepository.findById(courseID);
-        Optional<ApplicationUser> userOptional = this.usersRepository.findById(teacherID);
 
-        if(!courseOptional.isPresent() || !userOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or applicationUser");
+        if(!this.teachersRepository.existsById(teacherID))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Teacher with supplied ID not found");
 
-        if(!userOptional.get().getRole().equals(Role.STAFF))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only a teacher can create an assignment");
+        if(!this.coursesRepository.existsById(courseID))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course with supplied ID not found");
 
-        boolean notAllowed = true;
-        for(ApplicationUser applicationUser : courseOptional.get().getLecturers()){
-            if(applicationUser.equals(userOptional.get())){
-                notAllowed = false;
-                break;
-            }
-        }
 
-        if(notAllowed)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The teacher is not authorized to create an assignment");
+        assignment.setCourse(courseOptional.get());
 
         Course course = courseOptional.get();
         course.addAssignment(assignment);
@@ -70,18 +61,13 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public ResponseEntity updateAssignment(Assignment assignment, long courseID, long teacherID, long assID) {
+    public ResponseEntity updateAssignment(Assignment assignment,long assID, long courseID, long teacherID) {
 
-        ResponseEntity responseEntity = this.validateCourseAssignment(courseID, teacherID, assID);
-
-        if(!responseEntity.getStatusCode().equals(HttpStatus.OK))
-            return responseEntity;
+        if(!this.assignmentsRepository.existsByIdAndCourseId(assID, courseID))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This assignment was not found in the course specified");
 
         Course course = this.coursesRepository.findById(courseID).get();
         Assignment assignmentEdited = this.assignmentsRepository.findById(assID).get();
-
-        if(!course.getAssignments().contains(assignmentEdited))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This assignment was not found in the course");
 
         assignmentEdited.setDeadline(assignment.getDeadline());
         assignmentEdited.setType(assignment.getType());
@@ -98,48 +84,47 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public ResponseEntity submitAssignment(CourseUploads courseUpload, long courseID, long assignmentID, long studentID) {
+    public ResponseEntity submitAnAssignment(CourseUploads courseUpload, long assignmentID, long studentID) {
 
         // Find the assignment and the course and also the student
-        Optional<Course> courseOptional = coursesRepository.findById(courseID);
         Optional<ApplicationUser> applicationUser = usersRepository.findById(studentID);
         Optional<Assignment> assignmentOptional = assignmentsRepository.findById(assignmentID);
 
-        if(!courseOptional.isPresent() || !applicationUser.isPresent() || !assignmentOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or applicationUser or assignment");
+        if(!applicationUser.isPresent() || !assignmentOptional.isPresent())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find applicationUser or assignment");
 
-        Course course = courseOptional.get();
+        Course course = assignmentOptional.get().getCourse();
         Assignment assignment = assignmentOptional.get();
 
         if(!course.getAssignments().contains(assignment))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Mismatch, course given does not contain the assignment given");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mismatch, course given does not contain the assignment given");
 
         // Compare dates
-        if( assignmentOptional.get().getDeadline().compareTo(new Date()) < 0)
-           return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Deadline has passed");
+        if( assignmentOptional.get().getDeadline().compareTo(Instant.now()) < 0)
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Deadline has passed");
 
         courseUpload.setApplicationUser(applicationUser.get());
-        courseUpload.setCourse(courseOptional.get());
+        courseUpload.setCourse(course);
         courseUpload.setContent(UploadType.HANDIN);
-        courseUpload.setAssignment(assignmentOptional.get());
+        courseUpload.setAssignment(assignment);
 
         course.getUploads().add(courseUpload);
 
         this.coursesRepository.save(course);
-
         return ResponseEntity.ok().body(assignment.getUploads());
     }
 
     @Override
-    public ResponseEntity deleteAssignment(long assID, long courseID, long studentID) {
+    public ResponseEntity deleteAssignment(long assID) {
 
-        ResponseEntity responseEntity = this.validateCourseAssignment(courseID, studentID, assID);
+        if(!this.assignmentsRepository.existsById(assID))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Assignment not found");
 
-        if(!responseEntity.getStatusCode().equals(HttpStatus.OK))
-            return responseEntity;
 
-        Course course = this.coursesRepository.getOne(courseID);
+
         Assignment assignment = this.assignmentsRepository.getOne(assID);
+        long courseID = assignment.getCourse().getId();
+        Course course = this.coursesRepository.getOne(courseID);
 
         CourseNews courseNews = new CourseNews();
         courseNews.setCourse(course);
@@ -147,44 +132,30 @@ public class AssignmentServiceImpl implements AssignmentService {
         courseNews.setText(assignment.getTitle());
 
         course.getNews().add(courseNews);
+
         course.getAssignments().remove(assignment);
+        this.assignmentsRepository.delete(assignment);
 
         this.coursesRepository.save(course);
-
-        return ResponseEntity.ok().body(course.getAssignments());
+        return ResponseEntity.ok().body(getCourseAssignments(courseID));
     }
 
     @Override
-    public ResponseEntity getSubmissions(long courseID, long studentID, long assignmentID) {
+    public ResponseEntity<List<CourseUploads>> getStudentAssignmentSubmissions(long assignmentID, long studentID) {
 
-        // Find the assignment and the course and also the student
-        Optional<Course> courseOptional = coursesRepository.findById(courseID);
-        Optional<ApplicationUser> applicationUser = usersRepository.findById(studentID);
-        Optional<Assignment> assignmentOptional = assignmentsRepository.findById(assignmentID);
-
-        if(!courseOptional.isPresent() || !applicationUser.isPresent() || !assignmentOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find course or applicationUser or assignment");
-
-        if(!applicationUser.get().getRole().equals(Role.STUDENT))
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This applicationUser is not a student");
-
-        if(!courseOptional.get().getStudents().contains(applicationUser.get()))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This student is not enrolled in this course");
-
-
-        Course course = courseOptional.get();
-        ApplicationUser user = applicationUser.get();
-        Assignment assignment = assignmentOptional.get();
-
-        List<CourseUploads> courseUploads = this.coursesRepository.findByCourseAndUser(course, user, assignment);
-
-        return ResponseEntity.ok().body(courseUploads);
+        return ResponseEntity.ok().body(this.courseUploadsRepository.findAllByAssignmentIdAndApplicationUserId(assignmentID, studentID));
     }
 
     @Override
-    public ResponseEntity deleteSubmittedAssignment(long handinID) {
+    public ResponseEntity getSubmissionsForTeachers(long assID, UploadType uploadType) {
+        List<CourseUploads> list = this.courseUploadsRepository.findAllByAssignmentIdAndContentEquals(assID, UploadType.HANDIN);
+        return ResponseEntity.ok().body(list);
+    }
 
-        Optional<CourseUploads> courseUploadsOptional = this.courseUplaodsRepository.findById(handinID);
+    @Override
+    public ResponseEntity deleteStudentSubmission(long handinID) {
+
+        Optional<CourseUploads> courseUploadsOptional = this.courseUploadsRepository.findById(handinID);
 
         if(!courseUploadsOptional.isPresent())
             return ResponseEntity.notFound().build();
@@ -194,42 +165,16 @@ public class AssignmentServiceImpl implements AssignmentService {
         Course course = courseUpload.getCourse();
         ApplicationUser applicationUser = courseUpload.getApplicationUser();
 
-        this.courseUplaodsRepository.delete(courseUploadsOptional.get());
+        this.courseUploadsRepository.delete(courseUploadsOptional.get());
 
         List<CourseUploads> courseUploads = this.coursesRepository.findUserUploads(course, applicationUser, courseUpload.getAssignment(), UploadType.HANDIN);
 
         return ResponseEntity.ok().body(courseUploads);
     }
 
-    private ResponseEntity validateCourseAssignment(long courseID, long userID, long assID){
-
-
-        Optional<Assignment> assignmentOptional = this.assignmentsRepository.findById(assID);
-        Optional<Course> courseOptional = this.coursesRepository.findById(courseID);
-        Optional<ApplicationUser> userOptional = this.usersRepository.findById(userID);
-
-        if(!courseOptional.isPresent() || !userOptional.isPresent() || !assignmentOptional.isPresent()){
-
-            List<String> messages = new ArrayList<>();
-            if(!courseOptional.isPresent())
-                messages.add("This course doesn't exist or have been deleted");
-
-            if(!userOptional.isPresent())
-                messages.add("This applicationUser doesn't exist or have been deleted");
-
-            if(!assignmentOptional.isPresent())
-                messages.add("This assignment doesn't exist or have been deleted");
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messages);
-        }
-
-        if(!userOptional.get().getRole().equals(Role.STAFF))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This applicationUser is not a staff");
-
-
-        if(!courseOptional.get().getLecturers().contains(userOptional.get()))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This staff is not authorized to edit the content of this course");
-
-        return ResponseEntity.ok().build();
+    @Override
+    public ResponseEntity<List<Assignment>> getCourseAssignments(long courseID) {
+        return ResponseEntity.ok().body(this.assignmentsRepository.findAllByCourseId(courseID));
     }
+
 }

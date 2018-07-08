@@ -1,11 +1,13 @@
 package com.enocholumide.domain.users;
 
-import com.enocholumide.domain.organisation.Organisation;
-import com.enocholumide.domain.organisation.UserOrganisations;
+import com.enocholumide.domain.organisation.UserOrganisation;
+import com.enocholumide.domain.school.Department;
 import com.enocholumide.domain.shared.DateAudit;
-import com.enocholumide.domain.shared.Roles;
 import com.enocholumide.domain.shared.enumerated.Role;
 import com.enocholumide.payloads.requests.SignUpRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +25,12 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicationUser extends DateAudit {
+
+    @ManyToOne
+    @JsonIgnoreProperties({"programsOffered"})
+    private Department department;
 
     @NotBlank
     private String firstName;
@@ -31,13 +38,14 @@ public class ApplicationUser extends DateAudit {
     @NotBlank
     private String lastName;
 
+    @JsonIgnore
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "applicationuser_organisations",
             joinColumns = @JoinColumn(name = "applicationuser_id"),
             inverseJoinColumns = @JoinColumn(name = "userorganisations_id"))
-    private Set<UserOrganisations> organisations= new HashSet<>();
+    private Set<UserOrganisation> organisations= new HashSet<>();
 
     @NaturalId @NotBlank @Size(max = 40)
     @Email
@@ -64,10 +72,11 @@ public class ApplicationUser extends DateAudit {
     @Column(name = "role_id")
     private Set<Role> roles = new HashSet<>();
 
-    public ApplicationUser(String firstName, String lastName, String photoUrl) {
+    public ApplicationUser(String firstName, String lastName, String photoUrl, Department department) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.photoUrl = photoUrl;
+        this.department = department;
     }
 
     public ApplicationUser(SignUpRequest signUpRequest){

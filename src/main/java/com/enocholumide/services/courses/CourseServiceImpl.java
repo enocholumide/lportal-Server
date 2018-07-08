@@ -3,24 +3,23 @@ package com.enocholumide.services.courses;
 import com.enocholumide.domain.school.course.Course;
 import com.enocholumide.domain.school.course.CourseNews;
 import com.enocholumide.domain.school.course.CourseUploads;
+import com.enocholumide.domain.school.course.StudentCourse;
 import com.enocholumide.domain.shared.enumerated.CourseNewsType;
 import com.enocholumide.domain.shared.enumerated.Role;
+import com.enocholumide.domain.shared.enumerated.Status;
 import com.enocholumide.domain.shared.enumerated.UploadType;
 import com.enocholumide.domain.users.ApplicationUser;
 import com.enocholumide.domain.users.Staff;
 import com.enocholumide.domain.users.Student;
-import com.enocholumide.repositories.AssignmentsRepository;
-import com.enocholumide.repositories.CourseUplaodsRepository;
-import com.enocholumide.repositories.CoursesRepository;
-import com.enocholumide.repositories.UsersRepository;
+import com.enocholumide.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -37,8 +36,17 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private CourseUplaodsRepository courseUplaodsRepository;
 
+    @Autowired
+    private StudentCourseRepository studentCourseRepository;
+
+    @Autowired
+    private ProgramsRepository programsRepository;
+
+    @Autowired
+    private TeachersRepository teachersRepository;
+
     @Override
-    public List<Course> listAll() {
+    public List<Course> listAll(long orgID) {
         return coursesRepository.findAll();
     }
 
@@ -48,8 +56,23 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Set<Student> getStudents(long id) {
-        return this.coursesRepository.getOne(id).getStudents();
+    public List<Student> getStudents(long id) {
+
+        List<StudentCourse> studentCourses = this.studentCourseRepository.findAllByCourseIdAndStatusEquals(id, Status.JOINED);
+        List<Student> students = new ArrayList<>();
+
+        studentCourses.stream().forEach(studentCourse -> {
+            Student s = studentCourse.getStudent();
+            Student stud = new Student();
+            stud.setFirstName(s.getFirstName());
+            stud.setLastName(s.getLastName());
+            stud.setEmail(s.getEmail());
+            stud.setPhotoUrl(s.getPhotoUrl());
+            students.add(stud);
+
+        } );
+
+        return students;
     }
 
     @Override
@@ -144,15 +167,44 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public ResponseEntity getTeacherCourses(long teacherID) {
 
+
         try {
             Optional<ApplicationUser> user = this.usersRepository.findById(teacherID);
             Staff staff = (Staff) user.get();
             List<Course> list = this.coursesRepository.findCoursesByLecturersContaining(staff);
+
             return ResponseEntity.ok().body(list);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @Override
+    public ResponseEntity getTeacherCoursesByOrganisation(long teacherID, long orgID) {
+        try {
+            Optional<ApplicationUser> user = this.usersRepository.findById(teacherID);
+            Staff staff = (Staff) user.get();
+            List<Course> list = this.coursesRepository.findAllByLecturersContainingAndProgramDepartmentSchoolOrganisationId(staff, orgID);
+            return ResponseEntity.ok().body(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<StudentCourse> getStudentCourses(long orgID, long studentID) {
+        return this.studentCourseRepository.findAllByStudentIdAndCourseProgramDepartmentSchoolOrganisationIdAndStatusEquals(studentID, orgID, Status.JOINED);
+    }
+
+    @Override
+    public ResponseEntity findAllByProgram(long programID) {
+
+        if(!this.programsRepository.existsById(programID))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No such program");
+
+        return ResponseEntity.ok().body(this.coursesRepository.findAllByProgramId(programID));
     }
 
     private void makeActivity(Course course, CourseUploads courseUpload, CourseNewsType courseNewsType) {

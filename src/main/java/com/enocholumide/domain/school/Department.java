@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@JsonIgnoreProperties({"programs", "news", "staffs", "students"})
+@JsonIgnoreProperties({"programs", "news", "staffs", "students", "school"})
 public class Department {
 
     @Id
@@ -37,12 +37,6 @@ public class Department {
 
     @OneToMany( mappedBy = "department", cascade = CascadeType.ALL)
     private Set<News> news = new HashSet<>();
-
-    @OneToMany( mappedBy = "department", cascade = CascadeType.ALL)
-    private Set<Staff> staffs = new HashSet<>();
-
-    @OneToMany( mappedBy = "department", cascade = CascadeType.ALL)
-    private Set<Student> students = new HashSet<>();
 
     @Transient
     private Set<String> programsOffered = new HashSet<>(); // need to find a better way to do this

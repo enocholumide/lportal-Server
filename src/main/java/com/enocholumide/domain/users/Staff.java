@@ -1,11 +1,8 @@
 package com.enocholumide.domain.users;
 
-import com.enocholumide.domain.organisation.UserOrganisations;
 import com.enocholumide.domain.school.Department;
-import com.enocholumide.domain.shared.Roles;
 import com.enocholumide.domain.shared.enumerated.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,10 +14,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 public class Staff extends ApplicationUser {
-
-    @ManyToOne
-    @JsonIgnoreProperties({"programsOffered"})
-    private Department department;
 
     @Column(unique = true)
     private String staffID;
@@ -36,12 +29,11 @@ public class Staff extends ApplicationUser {
     }
 
     public Staff(String firstName, String lastName, String email, String photoUrl, Department department, String staffID) {
-        super(firstName, lastName, photoUrl);
+        super(firstName, lastName, photoUrl, department);
         super.setEmail(email);
         this.setRole(Role.STAFF);
         this.getRoles().add(Role.STAFF);
         this.staffID = staffID;
-        this.department = department;
     }
 
     @JsonIgnore

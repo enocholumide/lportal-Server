@@ -14,4 +14,5 @@ public interface ProgramsRepository extends JpaRepository<Program, Long> {
     @Query("SELECT p FROM Program p WHERE p.department = :department GROUP BY p.id, p.level")
     List<Program> getLevelsByDepartment(@Param("department") Department department);
 
+    Boolean existsById(long programID);
 }
