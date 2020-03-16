@@ -1,6 +1,6 @@
 # lportal-server (Spring)
 
-Work in progress
+Work in progress..
 
 https://lportal.herokuapp.com/
 
